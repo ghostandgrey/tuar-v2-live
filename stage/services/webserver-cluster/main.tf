@@ -18,7 +18,7 @@ data "aws_vpc" "default" {
 }
 
 data "aws_subnet_ids" "default" {
- vpc_id = data.aws_vpc.default.id
+  vpc_id = data.aws_vpc.default.id
 }
 
 data "terraform_remote_state" "db" {
@@ -26,7 +26,7 @@ data "terraform_remote_state" "db" {
 
   config = {
     bucket = "altocorp-terraform-up-and-running-state"
-    key = "stage/data-stores/mysql/terraform.tfstate"
+    key    = "stage/data-stores/mysql/terraform.tfstate"
     region = "us-east-2"
   }
 }
@@ -51,7 +51,7 @@ resource "aws_launch_configuration" "example" {
 
 resource "aws_autoscaling_group" "example" {
   launch_configuration = aws_launch_configuration.example.name
-  vpc_zone_identifier = data.aws_subnet_ids.default.ids
+  vpc_zone_identifier  = data.aws_subnet_ids.default.ids
 
   target_group_arns = [aws_lb_target_group.asg.arn]
   health_check_type = "ELB"
@@ -78,16 +78,16 @@ resource "aws_security_group" "instance" {
 }
 
 resource "aws_lb" "example" {
-  name = "terraform-asg-example"
+  name               = "terraform-asg-example"
   load_balancer_type = "application"
-  subnets = data.aws_subnet_ids.default.ids
-  security_groups = [aws_security_group.alb.id]
+  subnets            = data.aws_subnet_ids.default.ids
+  security_groups    = [aws_security_group.alb.id]
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.example.arn
-  port = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
     type = "fixed-response"
@@ -95,7 +95,7 @@ resource "aws_lb_listener" "http" {
     fixed_response {
       content_type = "text/plain"
       message_body = "404: page not found"
-      status_code = 404
+      status_code  = 404
     }
   }
 }
@@ -104,40 +104,40 @@ resource "aws_security_group" "alb" {
   name = "terraform-example-alb"
 
   ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_lb_target_group" "asg" {
-  name = "terraform-asg-example"
-  port = var.server_port
+  name     = "terraform-asg-example"
+  port     = var.server_port
   protocol = "HTTP"
-  vpc_id = data.aws_vpc.default.id
+  vpc_id   = data.aws_vpc.default.id
 
   health_check {
-    path = "/"
-    protocol = "HTTP"
-    matcher = "200"
-    interval = 15
-    timeout = 3
-    healthy_threshold = 2
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 15
+    timeout             = 3
+    healthy_threshold   = 2
     unhealthy_threshold = 2
   }
 }
 
 resource "aws_alb_listener_rule" "asg" {
   listener_arn = aws_lb_listener.http.arn
-  priority = 100
+  priority     = 100
 
   condition {
     path_pattern {
@@ -146,7 +146,7 @@ resource "aws_alb_listener_rule" "asg" {
   }
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.asg.arn
   }
 }
