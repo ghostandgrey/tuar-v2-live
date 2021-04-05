@@ -41,4 +41,9 @@ module "webserver-cluster" {
   instance_type          = "m4.large"
   max_size               = 2
   min_size               = 10
+
+  custom_tags = {
+    Owner      = "team-foo"
+    DeployedBy = "terraform"
+  }
 }
