@@ -14,13 +14,17 @@ provider "aws" {
 }
 
 module "webserver_cluster" {
-  source                 = "../../../../tuar-v2-modules/services/webserver-cluster"
+  source = "../../../../tuar-v2-modules/services/webserver-cluster"
+
+  ami         = "ami-0c55b159cbfafe1f0"
+  server_text = "New server text"
+
   cluster_name           = "stage"
   db_remote_state_bucket = "altocorp-terraform-up-and-running-state"
   db_remote_state_key    = "stage/data-stores/mysql/terraform.tfstate"
-  instance_type          = "t2.micro"
-  max_size               = 2
-  min_size               = 2
-  enable_autoscaling     = false
-  enable_new_user_data   = true
+
+  instance_type      = "t2.micro"
+  max_size           = 2
+  min_size           = 2
+  enable_autoscaling = false
 }
